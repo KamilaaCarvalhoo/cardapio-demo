@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 /* ================= DADOS ================= */
 const categorias=["Burgers","Porções","Bebidas","Sobremesas","Combos"];
 
 const produtos=[
-  { id:1, nome:"X‑Bacon Premium", categoria:"Burgers", descricao:"Blend 180g, cheddar duplo e bacon crocante", preco:29.9, destaque:true,
+  { id:1, nome:"X‑Bacon Premium", categoria:"Burgers", descricao:"Blend 180g, cheddar duplo e bacon crocante", preco:29.9,
     imgs:[
       "https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
       "https://images.unsplash.com/photo-1550547660-d9450f859349",
@@ -37,7 +37,6 @@ const produtos=[
     ]}
 ];
 
-/* ================= APP ================= */
 export default function App(){
   const [categoria,setCategoria]=useState("Burgers");
   const [carrinho,setCarrinho]=useState([]);
@@ -46,20 +45,15 @@ export default function App(){
   const [lightbox,setLightbox]=useState(null);
   const [admin,setAdmin]=useState(false);
   const [logo,setLogo]=useState(null);
-
-  const carouselRef=useRef(null);
-
-  useEffect(()=>{
-    const el=carouselRef.current;
-    if(!el) return;
-    const id=setInterval(()=>{
-      el.scrollBy({left:350,behavior:"smooth"});
-    },4000);
-    return ()=>clearInterval(id);
-  },[]);
+  const [dark,setDark]=useState(true);
 
   const adicionar=p=>setCarrinho([...carrinho,p]);
   const total=carrinho.reduce((a,b)=>a+b.preco,0);
+
+  const produtosFiltrados = produtos.filter(
+    p=>p.categoria===categoria &&
+    p.nome.toLowerCase().includes(search.toLowerCase())
+  );
 
   const enviarWhatsApp=()=>{
     if(!carrinho.length) return;
@@ -72,17 +66,19 @@ export default function App(){
   };
 
   return(
-    <div className="min-h-screen text-white font-sans relative overflow-x-hidden">
+    <div className={`min-h-screen relative overflow-x-hidden transition-colors duration-500 ${dark?"text-white":"text-gray-900"}`}>
 
-      {/* ===== FUNDO ===== */}
+      {/* FUNDO */}
       <div className="fixed inset-0 -z-10">
-        <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9"
-             className="w-full h-full object-cover blur-sm scale-105" />
-        <div className="absolute inset-0 bg-black/70" />
+        <img
+          src="https://images.unsplash.com/photo-1552566626-52f8b828add9"
+          className={`w-full h-full object-cover blur-sm scale-105 ${dark?"brightness-50":"brightness-110"}`}
+        />
+        <div className={`${dark?"bg-black/70":"bg-white/60"} absolute inset-0`} />
       </div>
 
-      {/* ===== NAVBAR ===== */}
-      <nav className="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-xl z-50 px-4 md:px-10 py-4 flex flex-col md:flex-row gap-3 justify-between items-center">
+      {/* NAVBAR */}
+      <nav className="fixed top-0 left-0 right-0 backdrop-blur-xl z-50 px-4 md:px-10 py-4 flex flex-col md:flex-row gap-3 justify-between items-center">
         {logo ? (
           <img src={logo} className="h-10 md:h-12 object-contain" />
         ) : (
@@ -93,62 +89,58 @@ export default function App(){
           placeholder="Buscar produtos..."
           value={search}
           onChange={e=>setSearch(e.target.value)}
-          className="bg-white/10 px-4 py-2 rounded-lg outline-none text-sm w-full md:w-64"
+          className={`${dark?"bg-white/10":"bg-black/10"} px-4 py-2 rounded-lg outline-none text-sm w-full md:w-64`}
         />
 
-        <button
-          onClick={()=>setAdmin(true)}
-          className="bg-white/10 px-4 py-2 rounded-lg text-xs">
-          Admin Demo
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={()=>setDark(!dark)}
+            className="px-5 py-2 rounded-xl bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-semibold hover:scale-105 active:scale-95 shadow-lg transition-all duration-300">
+            {dark?"☀️ Light":"🌙 Dark"}
+          </button>
+
+          <button
+            onClick={()=>setAdmin(true)}
+            className="bg-white/20 px-4 py-2 rounded-lg text-xs">
+            Admin Demo
+          </button>
+        </div>
       </nav>
 
-      {/* ===== HERO ===== */}
+      {/* HERO */}
       <section className="min-h-[60vh] flex flex-col justify-center items-center text-center pt-32 px-4">
         <h1 className="text-4xl md:text-6xl font-extrabold text-yellow-400 mb-6">
           Experiência Digital Completa
         </h1>
-        <p className="text-gray-300 max-w-xl">
+        <p className={`${dark?"text-gray-300":"text-gray-700"} max-w-xl`}>
           Cardápio moderno com automação, pedidos rápidos e visual premium.
         </p>
       </section>
 
-      {/* ===== PROMOÇÃO ===== */}
-      <section className="px-6 md:px-14 mb-16">
-        <div className="bg-yellow-500 text-black rounded-3xl p-6 text-center font-bold text-lg">
-          🍔 Promoção hoje: Combo Casal por R$ 59,90
-        </div>
-      </section>
-
-      {/* ===== CATEGORIAS ===== */}
+      {/* CATEGORIAS */}
       <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-12 px-4">
         {categorias.map(cat=>(
-          <button key={cat}
+          <button
+            key={cat}
             onClick={()=>setCategoria(cat)}
-            className={`px-6 py-3 rounded-full font-semibold ${categoria===cat?"bg-yellow-500 text-black":"bg-white/10"}`}>
+            className={`px-7 py-3 rounded-full font-semibold shadow-lg hover:shadow-yellow-500/40 hover:scale-105 active:scale-95 transition-all duration-300 backdrop-blur-md ${categoria===cat?"bg-yellow-500 text-black":dark?"bg-white/10":"bg-black/10"}`}>
             {cat}
           </button>
         ))}
       </div>
 
-      {/* ===== PRODUTOS ===== */}
-      {produtos
-        .filter(p=>p.categoria===categoria)
-        .filter(p=>p.nome.toLowerCase().includes(search.toLowerCase()))
-        .map(p=>(
+      {/* PRODUTOS */}
+      {produtosFiltrados.map(p=>(
         <div key={p.id} className="mb-20">
-
-          <div ref={carouselRef}
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory px-6 md:px-14">
-
+          <div className="flex gap-6 overflow-x-auto px-6 md:px-14">
             {p.imgs.map((img,i)=>(
-              <div key={i} className="snap-center relative">
-                <div className="relative">
+              <div key={i} className="relative flex-shrink-0">
                 <motion.img
                   whileHover={{scale:1.05}}
                   onClick={()=>setLightbox(img)}
                   src={img}
-                  className="h-[260px] md:h-[340px] w-[300px] md:w-[460px] object-cover rounded-3xl shadow-2xl cursor-pointer" />
+                  className="h-[320px] md:h-[360px] w-[85vw] md:w-[460px] object-cover rounded-3xl shadow-2xl cursor-pointer"
+                />
 
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md rounded-b-3xl p-4">
                   <h3 className="font-bold text-lg">{p.nome}</h3>
@@ -162,41 +154,44 @@ export default function App(){
                   Escolher
                 </button>
               </div>
-              </div>
             ))}
           </div>
         </div>
       ))}
 
-      {/* ===== SOBRE ===== */}
+      {/* SOBRE */}
       <section className="px-6 md:px-14 mb-16 text-center">
         <h2 className="text-3xl font-bold text-yellow-400 mb-4">Sobre o Restaurante</h2>
-        <p className="text-gray-300 max-w-xl mx-auto">
+        <p className={`${dark?"text-gray-300":"text-gray-700"} max-w-xl mx-auto`}>
           Ambiente moderno, atendimento rápido e os melhores burgers da cidade.
         </p>
       </section>
 
-      {/* ===== GALERIA ===== */}
+      {/* GALERIA */}
       <section className="px-6 md:px-14 mb-16">
         <h2 className="text-3xl font-bold text-yellow-400 mb-6">Galeria</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[1,2,3,4].map(i=>(
-            <img key={i}
+            <img
+              key={i}
               onClick={()=>setLightbox("https://images.unsplash.com/photo-1552566626-52f8b828add9")}
               src="https://images.unsplash.com/photo-1552566626-52f8b828add9"
-              className="rounded-2xl cursor-pointer" />
+              className="rounded-2xl cursor-pointer"
+            />
           ))}
         </div>
       </section>
 
-      {/* ===== MAPA ===== */}
+      {/* MAPA */}
       <section className="px-6 md:px-14 mb-16 text-center">
         <h2 className="text-3xl font-bold text-yellow-400 mb-6">Localização</h2>
-        <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b"
-             className="rounded-3xl w-full h-72 object-cover" />
+        <img
+          src="https://images.unsplash.com/photo-1524661135-423995f22d0b"
+          className="rounded-3xl w-full h-72 object-cover"
+        />
       </section>
 
-      {/* ===== AVALIAÇÕES ===== */}
+      {/* AVALIAÇÕES */}
       <section className="px-6 md:px-14 mb-20">
         <h2 className="text-3xl font-bold text-yellow-400 mb-6">Avaliações</h2>
         <div className="grid md:grid-cols-3 gap-6">
@@ -212,35 +207,26 @@ export default function App(){
         </div>
       </section>
 
-      {/* ===== BOTÃO WHATSAPP ===== */}
+      {/* BOTÃO WHATSAPP */}
       <button
         onClick={enviarWhatsApp}
-        className="fixed bottom-20 left-4 md:left-8 bg-green-500 px-6 py-3 rounded-full font-bold shadow-xl">
+        className="fixed bottom-20 left-4 md:left-8 bg-gradient-to-r from-green-400 to-green-600 px-7 py-3 rounded-full font-bold shadow-xl hover:shadow-green-500/50 hover:scale-110 active:scale-95 transition-all duration-300">
         WhatsApp
       </button>
 
-      {/* ===== CARRINHO ===== */}
+      {/* CARRINHO */}
       <motion.button
         whileHover={{scale:1.1}}
         onClick={()=>setOpenCart(true)}
-        className="fixed bottom-20 right-4 md:right-8 bg-yellow-500 text-black px-6 py-3 rounded-full font-bold shadow-2xl">
+        className="fixed bottom-20 right-4 md:right-8 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-7 py-3 rounded-full font-bold shadow-2xl hover:shadow-yellow-500/50 hover:scale-110 active:scale-95 transition-all duration-300">
         🛒 {carrinho.length}
       </motion.button>
 
+      {/* MODAL CARRINHO */}
       <AnimatePresence>
         {openCart && (
-          <motion.div
-            initial={{opacity:0}}
-            animate={{opacity:1}}
-            exit={{opacity:0}}
-            className="fixed inset-0 bg-black/80 flex justify-center items-center p-4">
-
-            <motion.div
-              initial={{scale:.7}}
-              animate={{scale:1}}
-              exit={{scale:.7}}
-              className="bg-gray-900 p-6 rounded-3xl w-full max-w-md">
-
+          <motion.div className="fixed inset-0 bg-black/80 flex justify-center items-center p-4">
+            <motion.div className="bg-gray-900 p-6 rounded-3xl w-full max-w-md">
               <h2 className="text-xl font-bold mb-4">Seu Pedido</h2>
 
               {carrinho.map((item,i)=>(
@@ -255,15 +241,11 @@ export default function App(){
                 <strong className="text-yellow-400">R$ {total.toFixed(2)}</strong>
               </div>
 
-              <button
-                onClick={enviarWhatsApp}
-                className="mt-4 w-full bg-green-500 py-3 rounded-xl font-bold">
+              <button onClick={enviarWhatsApp} className="mt-4 w-full bg-green-500 py-3 rounded-xl font-bold">
                 Finalizar WhatsApp
               </button>
 
-              <button
-                onClick={()=>setOpenCart(false)}
-                className="mt-3 w-full bg-yellow-500 text-black py-3 rounded-xl font-bold">
+              <button onClick={()=>setOpenCart(false)} className="mt-3 w-full bg-yellow-500 text-black py-3 rounded-xl font-bold">
                 Fechar
               </button>
             </motion.div>
@@ -271,87 +253,60 @@ export default function App(){
         )}
       </AnimatePresence>
 
-      {/* ===== ADMIN DEMO ===== */}
+      {/* ADMIN DEMO */}
       <AnimatePresence>
         {admin && (
-          <motion.div
-            initial={{opacity:0}}
-            animate={{opacity:1}}
-            exit={{opacity:0}}
-            className="fixed inset-0 bg-black/90 flex justify-center items-center z-50">
-
+          <motion.div className="fixed inset-0 bg-black/90 flex justify-center items-center z-50">
             <div className="bg-gray-900 p-8 rounded-3xl w-[90%] max-w-lg">
               <h2 className="text-2xl font-bold mb-6">Painel Admin Demo</h2>
 
-              <p className="text-gray-400 mb-6">
-                Demonstração: alterações aqui simulam edição do cardápio.
-              </p>
+              <select className="w-full bg-black/40 p-3 rounded-xl mb-4"
+                onChange={(e)=>produtos[0].categoria=e.target.value}>
+                <option>Selecionar seção</option>
+                {categorias.map(c=>(<option key={c}>{c}</option>))}
+              </select>
 
-              <div className="space-y-4 mb-6">
-                <select
-                  className="w-full bg-black/40 p-3 rounded-xl"
-                  onChange={(e)=>{
-                    produtos[0].categoria=e.target.value;
-                  }}>
-                  <option>Selecionar seção</option>
-                  {categorias.map(c=>(<option key={c}>{c}</option>))}
-                </select>
+              <input
+                placeholder="Novo nome produto"
+                className="w-full bg-black/40 p-3 rounded-xl mb-4"
+                onChange={(e)=>produtos[0].nome=e.target.value}
+              />
 
-                <input
-                  placeholder="Novo nome do produto (demo)"
-                  className="w-full bg-black/40 p-3 rounded-xl"
-                  onChange={(e)=>{
-                    produtos[0].nome=e.target.value;
-                  }}
-                />
+              <input
+                placeholder="Novo preço"
+                className="w-full bg-black/40 p-3 rounded-xl mb-4"
+                onChange={(e)=>produtos[0].preco=parseFloat(e.target.value||0)}
+              />
 
-                <input
-                  placeholder="Novo preço (demo)"
-                  className="w-full bg-black/40 p-3 rounded-xl"
-                  onChange={(e)=>{
-                    produtos[0].preco=parseFloat(e.target.value||0);
-                  }}
-                />
+              <input
+                type="file"
+                accept="image/*"
+                className="w-full bg-black/40 p-3 rounded-xl mb-4"
+                onChange={(e)=>{
+                  const file=e.target.files[0];
+                  if(!file) return;
+                  const reader=new FileReader();
+                  reader.onload=(ev)=>produtos[0].imgs[0]=ev.target.result;
+                  reader.readAsDataURL(file);
+                }}
+              />
 
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full bg-black/40 p-3 rounded-xl"
-                  onChange={(e)=>{
-                    const file=e.target.files[0];
-                    if(!file) return;
-                    const reader=new FileReader();
-                    reader.onload=(ev)=>{
-                      produtos[0].imgs[0]=ev.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                  }}
-                />
-
-                <p className="text-xs text-gray-500">
-                  ⚠️ Alterações são apenas visuais para apresentação.
-
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full bg-black/40 p-3 rounded-xl"
-                  onChange={(e)=>{
-                    const file=e.target.files[0];
-                    if(!file) return;
-                    const reader=new FileReader();
-                    reader.onload=(ev)=>{
-                      setLogo(ev.target.result);
-                    };
-                    reader.readAsDataURL(file);
-                  }}
-                />
-                <p className="text-xs text-gray-500">Upload logo restaurante (demo)</p>
-                </p>
-              </div>
+              <input
+                type="file"
+                accept="image/*"
+                className="w-full bg-black/40 p-3 rounded-xl mb-4"
+                onChange={(e)=>{
+                  const file=e.target.files[0];
+                  if(!file) return;
+                  const reader=new FileReader();
+                  reader.onload=(ev)=>setLogo(ev.target.result);
+                  reader.readAsDataURL(file);
+                }}
+              />
 
               <button
                 onClick={()=>setAdmin(false)}
-                className="bg-yellow-500 text-black px-6 py-3 rounded-xl font-bold">
+                className="bg-yellow-500 text-black px-6 py-3 rounded-xl font-bold w-full">
                 Fechar
               </button>
             </div>
@@ -359,7 +314,7 @@ export default function App(){
         )}
       </AnimatePresence>
 
-      {/* ===== LIGHTBOX ===== */}
+      {/* LIGHTBOX */}
       <AnimatePresence>
         {lightbox && (
           <motion.div
