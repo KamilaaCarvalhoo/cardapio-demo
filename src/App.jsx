@@ -46,6 +46,7 @@ export default function App(){
   const [admin,setAdmin]=useState(false);
   const [logo,setLogo]=useState(null);
   const [dark,setDark]=useState(true);
+  const [pagamento,setPagamento]=useState(false);
 
   /* ===== CARRINHO ===== */
   const adicionar=p=>{
@@ -112,9 +113,7 @@ export default function App(){
       {/* HERO */}
       <section className="min-h-[60vh] flex flex-col justify-center items-center text-center pt-32 px-4">
         <h1 className="text-4xl md:text-6xl font-extrabold text-yellow-400 mb-6">
-          Experiência Digital Completa 
-          <br />
-          Demostração
+          Experiência Digital Completa
         </h1>
       </section>
 
@@ -198,13 +197,12 @@ export default function App(){
         </div>
       </section>
 
-      {/* WHATSAPP */}
+      {/* BOTÕES FIXOS */}
       <button onClick={enviarWhatsApp}
         className="fixed bottom-20 left-4 md:left-8 bg-green-500 px-6 py-3 rounded-full font-bold shadow-xl">
         WhatsApp
       </button>
 
-      {/* CARRINHO */}
       <motion.button whileHover={{scale:1.1}}
         onClick={()=>setOpenCart(true)}
         className="fixed bottom-20 right-4 md:right-8 bg-yellow-500 text-black px-6 py-3 rounded-full font-bold shadow-2xl">
@@ -219,8 +217,7 @@ export default function App(){
               <h2 className="text-xl font-bold mb-4">Seu Pedido</h2>
 
               {carrinho.map(item=>(
-                <motion.div key={item.id} layout
-                  className="flex justify-between items-center mb-4">
+                <motion.div key={item.id} layout className="flex justify-between items-center mb-4">
                   <div>
                     <p>{item.nome}</p>
                     <p className="text-sm opacity-70">
@@ -245,11 +242,39 @@ export default function App(){
               <button onClick={limparCarrinho}
                 className="mt-4 w-full bg-red-600 py-2 rounded-xl">Limpar carrinho</button>
 
-              <button onClick={enviarWhatsApp}
-                className="mt-2 w-full bg-green-500 py-3 rounded-xl font-bold">Finalizar WhatsApp</button>
+              <button onClick={()=>setPagamento(true)}
+                className="mt-2 w-full bg-blue-600 py-3 rounded-xl font-bold">Ir para pagamento</button>
 
               <button onClick={()=>setOpenCart(false)}
                 className="mt-2 w-full bg-yellow-500 text-black py-3 rounded-xl font-bold">Fechar</button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* PAGAMENTO FAKE */}
+      <AnimatePresence>
+        {pagamento && (
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+            className="fixed inset-0 bg-black/90 flex justify-center items-center z-50">
+
+            <motion.div initial={{scale:.8}} animate={{scale:1}} exit={{scale:.8}}
+              className="bg-gray-900 p-8 rounded-3xl w-[90%] max-w-md text-center">
+
+              <h2 className="text-2xl font-bold mb-4">Pagamento (Demo)</h2>
+
+              <p className="mb-6 opacity-80">
+                Esta é uma simulação de pagamento apenas para apresentação do cardápio.
+              </p>
+
+              <div className="space-y-3 mb-6">
+                <button className="w-full bg-yellow-500 py-3 rounded-xl font-bold">Pix</button>
+                <button className="w-full bg-white text-black py-3 rounded-xl font-bold">Cartão</button>
+                <button className="w-full bg-green-600 py-3 rounded-xl font-bold">Dinheiro</button>
+              </div>
+
+              <button onClick={()=>setPagamento(false)}
+                className="w-full bg-red-600 py-3 rounded-xl font-bold">Fechar</button>
             </motion.div>
           </motion.div>
         )}
