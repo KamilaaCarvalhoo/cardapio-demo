@@ -48,7 +48,6 @@ export default function App(){
   const [dark,setDark]=useState(true);
   const [pagamento,setPagamento]=useState(false);
 
-  /* ===== CARRINHO ===== */
   const adicionar=p=>{
     setCarrinho(c=>{
       const existe=c.find(i=>i.id===p.id);
@@ -101,7 +100,7 @@ export default function App(){
 
         <div className="flex gap-2">
           <button onClick={()=>setDark(!dark)} className="px-4 py-2 rounded-lg bg-yellow-500 text-black font-semibold">
-            {dark?"☀️ Light":"🌙 Dark"}
+            {dark?"☀️":"🌙"}
           </button>
 
           <button onClick={()=>setAdmin(true)} className="bg-white/20 px-4 py-2 rounded-lg text-xs">
@@ -283,46 +282,93 @@ export default function App(){
       {/* ADMIN DEMO */}
       <AnimatePresence>
         {admin && (
-          <motion.div className="fixed inset-0 bg-black/90 flex justify-center items-center z-50">
-            <div className="bg-gray-900 p-8 rounded-3xl w-[90%] max-w-lg">
-              <h2 className="text-2xl font-bold mb-6">Painel Admin Demo</h2>
+          <motion.div className="fixed inset-0 bg-black/90 flex justify-center items-center z-50 overflow-auto">
+            <div className="bg-gray-900 p-8 rounded-3xl w-[95%] max-w-2xl">
 
-              <select className="w-full bg-black/40 p-3 rounded-xl mb-4"
-                onChange={(e)=>produtos[0].categoria=e.target.value}>
-                <option>Selecionar seção</option>
-                {categorias.map(c=>(<option key={c}>{c}</option>))}
-              </select>
+              <h2 className="text-2xl font-bold mb-6 text-yellow-400">
+                Painel Admin (Demo Melhorado)
+              </h2>
 
-              <input placeholder="Novo nome produto"
-                className="w-full bg-black/40 p-3 rounded-xl mb-4"
-                onChange={(e)=>produtos[0].nome=e.target.value} />
+              <div className="mb-8">
+                <h3 className="font-semibold mb-2">Configurações restaurante</h3>
 
-              <input placeholder="Novo preço"
-                className="w-full bg-black/40 p-3 rounded-xl mb-4"
-                onChange={(e)=>produtos[0].preco=parseFloat(e.target.value||0)} />
+                <input
+                  placeholder="Horário funcionamento ex: 18h às 23h"
+                  className="w-full bg-black/40 p-3 rounded-xl mb-3"
+                />
 
-              <input type="file" accept="image/*"
-                className="w-full bg-black/40 p-3 rounded-xl mb-4"
-                onChange={(e)=>{
-                  const file=e.target.files[0];
-                  if(!file) return;
-                  const reader=new FileReader();
-                  reader.onload=(ev)=>produtos[0].imgs[0]=ev.target.result;
-                  reader.readAsDataURL(file);
-                }} />
+                <input
+                  placeholder="Tempo médio preparo ex: 25 min"
+                  className="w-full bg-black/40 p-3 rounded-xl"
+                />
+              </div>
 
-              <input type="file" accept="image/*"
-                className="w-full bg-black/40 p-3 rounded-xl mb-4"
-                onChange={(e)=>{
-                  const file=e.target.files[0];
-                  if(!file) return;
-                  const reader=new FileReader();
-                  reader.onload=(ev)=>setLogo(ev.target.result);
-                  reader.readAsDataURL(file);
-                }} />
+              <div className="mb-8">
+                <h3 className="font-semibold mb-2">Editar produto demo</h3>
 
-              <button onClick={()=>setAdmin(false)}
-                className="bg-yellow-500 text-black px-6 py-3 rounded-xl font-bold w-full">Fechar</button>
+                <select
+                  className="w-full bg-black/40 p-3 rounded-xl mb-3"
+                  onChange={(e)=>produtos[0].categoria=e.target.value}
+                >
+                  <option>Selecionar seção</option>
+                  {categorias.map(c=>(<option key={c}>{c}</option>))}
+                </select>
+
+                <input
+                  placeholder="Nome produto"
+                  className="w-full bg-black/40 p-3 rounded-xl mb-3"
+                  onChange={(e)=>produtos[0].nome=e.target.value}
+                />
+
+                <input
+                  placeholder="Preço"
+                  className="w-full bg-black/40 p-3 rounded-xl mb-3"
+                  onChange={(e)=>produtos[0].preco=parseFloat(e.target.value||0)}
+                />
+
+                <textarea
+                  placeholder="Descrição produto"
+                  className="w-full bg-black/40 p-3 rounded-xl mb-3"
+                  onChange={(e)=>produtos[0].descricao=e.target.value}
+                />
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full bg-black/40 p-3 rounded-xl"
+                  onChange={(e)=>{
+                    const file=e.target.files[0];
+                    if(!file) return;
+                    const reader=new FileReader();
+                    reader.onload=(ev)=>produtos[0].imgs[0]=ev.target.result;
+                    reader.readAsDataURL(file);
+                  }}
+                />
+              </div>
+
+              <div className="mb-8">
+                <h3 className="font-semibold mb-2">Logo restaurante</h3>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="w-full bg-black/40 p-3 rounded-xl"
+                  onChange={(e)=>{
+                    const file=e.target.files[0];
+                    if(!file) return;
+                    const reader=new FileReader();
+                    reader.onload=(ev)=>setLogo(ev.target.result);
+                    reader.readAsDataURL(file);
+                  }}
+                />
+              </div>
+
+              <button
+                onClick={()=>setAdmin(false)}
+                className="bg-yellow-500 text-black px-6 py-3 rounded-xl font-bold w-full hover:scale-105 transition"
+              >
+                Fechar painel
+              </button>
             </div>
           </motion.div>
         )}
